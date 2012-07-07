@@ -14,7 +14,7 @@ YSLOW.registerRule({
     id: 'ft_pngsnotgifs',
     name: 'Serve PNGs instead of GIFs',
     url: 'http://frontendtest.com/pngs-are-used-instead-of-gifs/',
-    info: 'PNG image format was created to improve upon and replace GIF images; they compress better in most cases. Additionally, there are patent issues around using GIFs.',
+    info: 'The PNG image format was created to improve upon and replace GIF images; they compress better in most cases. Additionally, there are patent issues around using GIFs.',
     category: ['images'],
 
     config: {
@@ -22,19 +22,20 @@ YSLOW.registerRule({
     },
 
     lint: function (doc, cset, config) {
-        var i, prop, score,
+        var i, prop, score, score_shift,
             offenders = [],
             comps = cset.getComponentsByType('image');
 		
         for (i = 0; i < comps.length; i += 1) {
             if (typeof comps[i].url !== 'undefined' && comps[i].url.match(/\.gif$/) != null) {	
+				//broken gifs will not pass this test -- they will have a smaller file size than 512.
                 if(comps[i].size !== 'undefined' && comps[i].size > 512 ) {
 					offenders.push(comps[i]);
 				}
             }
         }
 
-        score = 90 - offenders.length * parseInt(config.points, 10);
+        score = 100 - offenders.length * parseInt(config.points, 10);
 
         return {
             score: score,
@@ -47,13 +48,85 @@ YSLOW.registerRule({
     }
 });
 
- YSLOW.registerRuleset({
-     id: 'ftcore',
-     name: 'FrontendTest Core',
-     rules: {
-         'ft_pngsnotgifs': {}
-     },
-     weights: {
-         'ft_pngsnotgifs': 3
-     }
+/**
+ * ft_html5doctype:
+ *
+ * it's either true or not. If not, give them a meh score like C.
+ * THIS TEST IS A HACK AND IT NEEDS TO BE RE-WRITTEN. I NEED TO FIGURE OUT HOW TO GET THE DOCTYPE FROM THE ENVIRONMENT
+ */
+
+YSLOW.registerRule({
+    id: 'ft_html5doctype',
+    name: 'Use the HTML5 doctype',
+    url: 'http://frontendtest.com/site-is-html5-the-evolving-standard/',
+    info: 'If this is a site under development instead of a retired page of content, you probably want to make it an HTML5 document. This transition should be as easy as changing the doctype to &lt;!doctype html&gt;. If you wish, you may also make the character encoding meta tag shorter. What had looked something like &lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt; replaced with &lt;meta charset="utf-8"&gt;.',
+    category: ['content'],
+    config: {
+        //points: 3
+    },
+
+    lint: function (doc, cset, config) {
+        var regex, stripped_data, score = 100, data, stripped_data;
+
+		data = cset.doc_comp.body;
+		
+		stripped_data = data.replace(/<!--.*-->/g, "").substring(0,1000).toLowerCase().trim();
+
+        if(!stripped_data.match(/^<!doctype html>/)) score = 75;		
+
+        return {
+            score: score,
+            message: (score != 100) ? 'Site should be updated to HTML5, the evolving standard' : ''
+        };
+    }
  });
+
+
+/**
+ * ft_doctypenotfirst:
+ *
+ * it's either true or not. If not...
+ * THIS TEST IS A HACK AND IT NEEDS TO BE RE-WRITTEN. I NEED TO FIGURE OUT HOW TO GET THE DOCTYPE FROM THE ENVIRONMENT
+ */
+
+YSLOW.registerRule({
+     id: 'ft_doctypefirst',
+    name: 'Put doctype declaration first',
+    //url: '',
+    info: 'The doctype declaration\'s purpose is to tell browsers (and validation tools) what type of HTML document it is receiving. If you do not provide a doctype, or the doctype is not the first instruction in your document, browsers will render in <a href="http://en.wikipedia.org/wiki/Quirks_mode">quirks mode</a>. If you don\'t want to think about what that means, or maintain a site in quirks mode, we recommend using the HTML5 doctype: &lt;!DOCTYPE html&gt; This doctype will render pages in "standards mode" for most browsers, and "almost standards mode" for older versions of Internet Explorer (6 and 7).',
+    category: ['content'],
+    config: {
+        //points: 3
+    },
+
+    lint: function (doc, cset, config) {
+        var regex, stripped_data, score = 100, data, stripped_data;
+
+		data = cset.doc_comp.body;
+
+		stripped_data = data.replace(/<!--.*-->/g, "").substring(0,1000).toLowerCase().trim();
+
+        if(!stripped_data.match(/^<!doctype /)) score = 68;		
+
+        return {
+            score: score,
+            message: (score != 100) ? 'A doctype declaration should appear first in the HTML document' : ''
+        };
+    }
+ });
+
+YSLOW.registerRuleset({
+    id: 'ftcore',
+    name: 'FrontendTest Core',
+    rules: {
+        'ft_pngsnotgifs': {},
+        'ft_html5doctype': {},
+        'ft_doctypefirst': {}
+    },
+    weights: {
+        'ft_pngsnotgifs': 3,
+        'ft_html5doctype': 6,
+        'ft_doctypefirst': 8
+    }
+});
+
