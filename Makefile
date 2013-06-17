@@ -63,7 +63,8 @@ YSLOW_LICENSE := $(SRC_COMMON)/license
 # lib/tools directories/files
 YUI_LIB := $(SRC_YUI)/build
 IMG := img
-YUICOMPRESSOR := java -jar ~/bin/yuicompressor-2.4.7.jar
+YUICOMPRESSOR := `which yuicompressor`
+TAC = $(shell which tac || echo 'tail -r')
 
 .PHONY: bookmarklet chrome firefox har nodejs opera safari wsh rhino phantomjs nodeserver
 
@@ -362,7 +363,7 @@ phantomjs:
             $(SRC_COMMON)/renderers.js \
             $(SRC_COMMON)/peeler.js \
             $(SRC_COMMON)/peeler-bm-ch-ph.js; \
-        tail -r $(SRC_PHANTOMJS)/controller.js | sed '/YSLOW HERE/q' | tail -r ) | sed '/YSLOW HERE/d' \
+        $(TAC) $(SRC_PHANTOMJS)/controller.js | sed '/YSLOW HERE/q' | $(TAC) ) | sed '/YSLOW HERE/d' \
         > $(BUILD_PHANTOMJS)/yslow.js
 	@sed -i -e "s/{{YSLOW_VERSION}}/$(YSLOW_VERSION)/" $(BUILD_PHANTOMJS)/yslow.js
 	@echo "done"
@@ -545,7 +546,7 @@ clean-nodeserver:
 	@if [ -d $(BUILD_NODESERVER) ]; then rmdir $(BUILD_NODESERVER); fi
 	@echo "done"
 
-pkg-bookmarklet: BM_CONFIG := config-ycs.js
+pkg-bookmarklet: BM_CONFIG := config-production.js
 pkg-bookmarklet: yui bookmarklet-files
 	@echo "packaging BOOKMARKLET..."
 	@if [ ! -d $(PKG_BOOKMARKLET)/$(YSLOW_VERSION) ]; then mkdir -p $(PKG_BOOKMARKLET)/$(YSLOW_VERSION); fi
