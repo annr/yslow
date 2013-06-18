@@ -87,6 +87,8 @@ YSLOW.doc.addRuleInfo('ymincookie', 'Reduce cookie size', 'HTTP cookies are used
 
 YSLOW.doc.addRuleInfo('ycookiefree', 'Use cookie-free domains', 'When the browser requests a static image and sends cookies with the request, the server ignores the cookies.  These cookies are unnecessary network traffic.  To workaround this problem, make sure that static components are requested with cookie-free requests by creating a subdomain and hosting them there.');
 
+YSLOW.doc.addRuleInfo('yimport', 'Choose &lt;link&gt; over @import', 'One of the previous best practices states that CSS should be at the top in order to allow for progressive rendering. In IE @import behaves the same as using &lt;link&gt; at the bottom of the page, so it\'s best not to use it.');
+
 YSLOW.doc.addRuleInfo('ynofilter', 'Avoid AlphaImageLoader filter', 'The IE-proprietary AlphaImageLoader filter attempts to fix a problem with semi-transparent true color PNG files in IE versions less than Version 7.  However, this filter blocks rendering and freezes the browser while the image is being downloaded.  Additionally, it increases memory consumption.  The problem is further multiplied because it is applied per element, not per image.');
 
 YSLOW.doc.addRuleInfo('yimgnoscale', 'Do not scale images in HTML', 'Web page designers sometimes set image dimensions by using the width and height attributes of the HTML image element.  Avoid doing this since it can result in images being larger than needed.  For example, if your page requires image myimg.jpg which has dimensions 240x720 but displays it with dimensions 120x360 using the width and height attributes, then the browser will download an image that is larger than necessary.');

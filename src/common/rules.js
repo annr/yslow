@@ -1026,6 +1026,46 @@ YSLOW.registerRule({
 });
 
 YSLOW.registerRule({
+    id: 'yimport',
+    //name: 'Choose &lt;link&gt; over @import',
+    url: 'http://developer.yahoo.com/performance/rules.html#csslink',
+    category: ['css'],
+
+    config: {
+        points: 5
+    },
+
+    lint: function (doc, cset, config) {
+        var i, len, score, comp,
+            comps = cset.getComponentsByType('css'),
+            offenders = [];
+
+        // expose all offenders
+        for (i = 0, len = comps.length; i < len; i += 1) {
+            comp = comps[i];
+            if (comp.containerNode === undefined) {
+                offenders.push(comp);
+            }
+        }
+
+        score = 100;
+        if (offenders.length > 0) {
+            // start at 99 so each ding drops us a grade
+            score -= 1 + offenders.length * parseInt(config.points, 10);
+        }
+
+        return {
+            score: score,
+            message: (offenders.length > 0) ? YSLOW.util.plural(
+                'There %are% %num% case%s% of @import pointing to the following file%s%',
+                offenders.length
+            ) : '',
+            components: offenders
+        };
+    }
+});
+
+YSLOW.registerRule({
     id: 'ynofilter',
     //name: 'Avoid Filters',
     url: 'http://developer.yahoo.com/performance/rules.html#no_filters',
@@ -1306,6 +1346,8 @@ YSLOW.registerRuleset({ // yahoo default with default configuration
         // 23
         ycookiefree: {},
         // 24
+        yimport: {},
+        // 27
         ynofilter: {},
         // 28
         yimgnoscale: {},
@@ -1333,6 +1375,7 @@ YSLOW.registerRuleset({ // yahoo default with default configuration
         yno404: 4,
         ymincookie: 3,
         ycookiefree: 3,
+        yimport: 3,
         ynofilter: 4,
         yimgnoscale: 3,
         yfavicon: 2

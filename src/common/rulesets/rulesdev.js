@@ -3,6 +3,26 @@
  *
  */
 
+/*
+YSLOW.registerRule({
+    id: 'xtemplate',
+    url: 'http://developer.yahoo.com/performance/rules.html#csslink',
+    category: ['css'],
+    info: 'hey',
+    config: {
+        points: 2
+    },
+
+    lint: function(doc, components, config) {
+        return {
+            score: 100,
+            message: "Did you just say never?",
+            components: []
+        };
+    }
+});
+*/
+
 /**
  * xpngsnotgifs:
  *
@@ -59,7 +79,7 @@ YSLOW.registerRule({
     id: 'xhtml5doctype',
     name: 'Use the HTML5 doctype',
     url: 'http://frontendtest.com/site-is-html5-the-evolving-standard/',
-    info: 'If this is a site under development instead of a retired page of content, you probably want to make it an HTML5 document. This transition should be as easy as changing the doctype to &lt;!doctype html&gt;. If you wish, you may also make the character encoding meta tag shorter. What had looked something like &lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt; replaced with &lt;meta charset="utf-8"&gt;.',
+    info: 'If this is a site under development and not a retired page of content, you probably want to make it an HTML5 document. This transition should be as easy as changing the doctype to &lt;!doctype html&gt;. And if you make this change, you may also make the character encoding meta tag shorter. What had looked something like &lt;meta http-equiv="Content-Type" content="text/html;charset=utf-8" /&gt; replaced with &lt;meta charset="utf-8"&gt;.',
     category: ['content'],
     config: {
         //points: 3
@@ -114,47 +134,6 @@ YSLOW.registerRule({
         };
     }
  });
-
-/*
-YSLOW.registerRule({
-    id: 'yimport',
-    // name: 'Choose <link> over @import',
-    url: 'http://developer.yahoo.com/performance/rules.html#csslink',
-    category: ['css'],
-    config: {
-        points: 10
-    },
-
-    lint: function (doc, cset, config) {
-        var i, len, score, comp,
-            comps = cset.getComponentsByType('css'),
-            offenders = [];
-
-        // expose all offenders
-        for (i = 0, len = comps.length; i < len; i += 1) {
-            comp = comps[i];
-            if (comp.containerNode === 'body') {
-                offenders.push(comp);
-            }
-        }
-
-        score = 100;
-        if (offenders.length > 0) {
-            // start at 99 so each ding drops us a grade
-            score -= 1 + offenders.length * parseInt(config.points, 10);
-        }
-
-        return {
-            score: score,
-            message: (offenders.length > 0) ? YSLOW.util.plural(
-                'There %are% %num% case%s%',
-                offenders.length
-            ) + ' of @import' : '',
-            components: offenders
-        };
-    }
-});
-*/
 
 YSLOW.registerRuleset({
     id: 'yrulesdev',
